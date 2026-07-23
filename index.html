@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Copilot LLM Enterprise Cost Estimator</title>
+    <!-- Tailwind CSS for utility styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Catppuccin Mocha inspired pastel palette merged with corporate minimal theme */
+        :root {
+            --brand-red: #c0151d;
+            --brand-red-hover: #a01017;
+            --bg-main: #f8f9fa;
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            
+            /* Catppuccin Mocha Pastel Highlights */
+            --mocha-rosewater: #f5e0dc;
+            --mocha-flamingo: #f2cdcd;
+            --mocha-pink: #f5c2e7;
+            --mocha-mauve: #cba6f7;
+            --mocha-red: #f38ba8;
+            --mocha-peach: #fab387;
+            --mocha-yellow: #f9e2af;
+            --mocha-green: #a6e3a1;
+            --mocha-sapphire: #74c7ec;
+            --mocha-blue: #89b4fa;
+            
+            /* Tier Badges */
+            --tier-lightweight-bg: #e8f5e9;
+            --tier-lightweight-text: #2e7d32;
+            --tier-versatile-bg: #fff8e1;
+            --tier-versatile-text: #f57f17;
+            --tier-powerful-bg: #ffebee;
+            --tier-powerful-text: #c62828;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        .input-field {
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 14px;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-field:focus {
+            border-color: var(--brand-red);
+            box-shadow: 0 0 0 3px rgba(192, 21, 29, 0.1);
+        }
+
+        .badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+
+        .badge-lightweight { background-color: var(--tier-lightweight-bg); color: var(--tier-lightweight-text); }
+        .badge-versatile { background-color: var(--tier-versatile-bg); color: var(--tier-versatile-text); }
+        .badge-powerful { background-color: var(--tier-powerful-bg); color: var(--tier-powerful-text); }
+
+        /* Custom scrollbar for SharePoint embedded tables */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="max-w-7xl mx-auto space-y-6">
+        
+        <!-- HEADER -->
+        <div class="card p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-l-4 border-l-[#c0151d]">
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="text-xs font-bold uppercase tracking-wider text-[#c0151d]">Group Technology & Operations</span>
+                    <span class="text-xs text-slate-400">•</span>
+                    <span class="text-xs text-slate-500 font-medium">Enterprise Budgeting Tool</span>
+                </div>
+                <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">GitHub Copilot LLM Cost Estimator</h1>
+                <p class="text-sm text-slate-500 mt-1">Simulate departmental Copilot costs based on user tiers, base subscriptions, and usage tokens.</p>
+            </div>
+            <div class="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                <div class="text-right">
+                    <div class="text-xs text-slate-500 font-medium">Base Subscription</div>
+                    <div class="text-sm font-bold text-slate-800">$19 / user / month</div>
+                </div>
+                <div class="h-8 w-[1px] bg-slate-300"></div>
+                <div class="text-right">
+                    <div class="text-xs text-slate-500 font-medium">Included Allowance</div>
+                    <div class="text-sm font-bold text-emerald-600">1,900 AI Credits ($19)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- LEFT COLUMN: CONTROLS & INPUTS (4 COLS) -->
+            <div class="lg:col-span-4 space-y-6">
+                
+                <div class="card p-5 space-y-5">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-[#c0151d]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                            Team & Workflow Inputs
+                        </h2>
+                        <span class="text-xs font-semibold text-slate-400">Step 1 of 2</span>
+                    </div>
+
+                    <!-- Department Name -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Department / Project Name</label>
+                        <input type="text" id="inputDeptName" value="Rubik CRM & Core Tech" class="input-field w-full font-medium" placeholder="e.g. Core Digital Banking">
+                    </div>
+
+                    <!-- Monthly Token Baseline Slider -->
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <label class="text-xs font-bold text-slate-700">Monthly Tokens / Developer</label>
+                            <span class="text-xs font-bold text-[#c0151d] bg-red-50 px-2 py-0.5 rounded-md mono" id="tokenDisplay">20 Million</span>
+                        </div>
+                        <input type="range" id="inputTokenVolume" min="5" max="100" step="5" value="20" class="w-full accent-[#c0151d] cursor-pointer">
+                        <div class="flex justify-between text-[10px] text-slate-400 font-medium">
+                            <span>5M (Light)</span>
+                            <span>20M (Standard)</span>
+                            <span>50M (Agentic)</span>
+                            <span>100M (Heavy)</span>
+                        </div>
+                    </div>
+
+                    <!-- Architecture Allocation Preset -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Architecture / Ratio Pattern</label>
+                        <select id="inputRatioPreset" class="input-field w-full font-medium text-slate-700">
+                            <option value="80-10-10">80% Cached | 10% Uncached | 10% Output (Coding Assistant)</option>
+                            <option value="70-25-05">70% Cached | 25% Uncached | 5% Output (Agentic / MCP)</option>
+                            <option value="50-35-15">50% Cached | 35% Uncached | 15% Output (RAG / Search)</option>
+                        </select>
+                    </div>
+
+                    <hr class="border-slate-100">
+
+                    <!-- User Allocations & Models per Tier -->
+                    <div class="space-y-4">
+                        <div class="text-xs font-bold text-slate-800 uppercase tracking-wider">User Distribution by Tier</div>
+
+                        <!-- Lightweight Tier Row -->
+                        <div class="p-3 rounded-xl border border-emerald-100 bg-emerald-50/30 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="badge badge-lightweight">Lightweight Tier</span>
+                                <span class="text-xs font-semibold text-slate-500">Jr Devs / QA / Autocomplete</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="text-[11px] font-medium text-slate-500 block">User Count</label>
+                                    <input type="number" id="usersLightweight" value="20" min="0" class="input-field w-full mono font-bold text-slate-800">
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-medium text-slate-500 block">Model Choice</label>
+                                    <select id="modelLightweight" class="input-field w-full text-xs">
+                                        <option value="gpt-5.4-mini" selected>GPT-5.4 mini (OpenAI)</option>
+                                        <option value="gemini-3.5-flash">Gemini 3.5 Flash (Google)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Versatile Tier Row -->
+                        <div class="p-3 rounded-xl border border-amber-100 bg-amber-50/30 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="badge badge-versatile">Versatile Tier</span>
+                                <span class="text-xs font-semibold text-slate-500">Mid/Senior Devs / Daily Chat</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="text-[11px] font-medium text-slate-500 block">User Count</label>
+                                    <input type="number" id="usersVersatile" value="20" min="0" class="input-field w-full mono font-bold text-slate-800">
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-medium text-slate-500 block">Model Choice</label>
+                                    <select id="modelVersatile" class="input-field w-full text-xs">
+                                        <option value="gpt-5.4" selected>GPT-5.4 (OpenAI)</option>
+                                        <option value="claude-sonnet-4.6">Claude Sonnet 4.6 (Anthropic)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Powerful Tier Row -->
+                        <div class="p-3 rounded-xl border border-rose-100 bg-rose-50/30 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="badge badge-powerful">Powerful Tier</span>
+                                <span class="text-xs font-semibold text-slate-500">Architects / Complex Tasks</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="text-[11px] font-medium text-slate-500 block">User Count</label>
+                                    <input type="number" id="usersPowerful" value="10" min="0" class="input-field w-full mono font-bold text-slate-800">
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-medium text-slate-500 block">Model Choice</label>
+                                    <select id="modelPowerful" class="input-field w-full text-xs">
+                                        <option value="gpt-5.5" selected>GPT-5.5 (OpenAI)</option>
+                                        <option value="claude-opus-4.7">Claude Opus 4.7 (Anthropic)</option>
+                                        <option value="gemini-3.1-pro">Gemini 3.1 Pro (Google)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN: DASHBOARD & BREAKDOWN (8 COLS) -->
+            <div class="lg:col-span-8 space-y-6">
+                
+                <!-- EXECUTIVE SUMMARY TOP CARDS -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    
+                    <!-- Card 1: Total Monthly Cost -->
+                    <div class="card p-5 bg-gradient-to-br from-slate-900 to-slate-800 text-white border-none shadow-md relative overflow-hidden">
+                        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-[#c0151d] opacity-20 rounded-full blur-xl"></div>
+                        <div class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Total Monthly Budget</div>
+                        <div class="text-3xl font-extrabold mono text-white" id="summaryTotalMonthly">$1,940.00</div>
+                        <div class="text-xs text-slate-400 mt-2 flex items-center justify-between">
+                            <span>Annual Total:</span>
+                            <span class="font-bold text-emerald-400 mono" id="summaryTotalAnnual">$23,280.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Total Active Users -->
+                    <div class="card p-5 bg-white border-slate-200">
+                        <div class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Total Allocated Users</div>
+                        <div class="text-3xl font-extrabold text-slate-800 mono" id="summaryTotalUsers">50 Users</div>
+                        <div class="text-xs text-slate-500 mt-2 flex items-center justify-between">
+                            <span>Blended Avg:</span>
+                            <span class="font-bold text-slate-700 mono" id="summaryBlendedAvg">$38.80 / dev</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Base License vs Overage Breakdown -->
+                    <div class="card p-5 bg-white border-slate-200">
+                        <div class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Base vs Additional Credit</div>
+                        <div class="flex items-baseline gap-1">
+                            <span class="text-xl font-bold text-slate-700 mono" id="summaryBaseSub">$950</span>
+                            <span class="text-xs text-slate-400 font-medium">Base</span>
+                            <span class="text-slate-300 font-light mx-1">+</span>
+                            <span class="text-xl font-bold text-[#c0151d] mono" id="summaryAddCredit">$990</span>
+                            <span class="text-xs text-slate-400 font-medium">Credit</span>
+                        </div>
+                        <div class="text-[11px] text-slate-400 mt-2">
+                            Base = $19/user (includes 1,900 credits).
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- THREE TIER COMPARISON CARDS (Inspired by Slide 2) -->
+                <div class="card p-5 space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-[#c0151d]"></span>
+                            Tier Cost Summary Breakdown
+                        </h3>
+                        <span class="text-xs text-slate-400 font-mono" id="tierSummaryHeaderNote">*Based on 20M tokens / user</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        
+                        <!-- Lightweight Card -->
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3 relative">
+                            <div class="flex justify-between items-center">
+                                <span class="badge badge-lightweight">Lightweight Tier</span>
+                                <span class="text-xs font-bold text-slate-600 mono" id="cardLightweightUserCount">20 Users</span>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-black text-slate-800 mono" id="cardLightweightPerUser">$19 <span class="text-xs font-normal text-slate-500">/ user</span></div>
+                                <div class="text-[11px] text-slate-500 font-medium mt-0.5" id="cardLightweightModelName">*Based on GPT-5.4 mini</div>
+                            </div>
+                            <div class="space-y-1.5 pt-2 border-t border-slate-200/60 text-xs">
+                                <div class="flex justify-between text-slate-600">
+                                    <span>Business License (Base):</span>
+                                    <span class="font-semibold mono">$19/mo</span>
+                                </div>
+                                <div class="flex justify-between text-slate-600">
+                                    <span>Add. Credit Usage:</span>
+                                    <span class="font-semibold mono text-emerald-600" id="cardLightweightAddCredit">$0/mo</span>
+                                </div>
+                                <div class="flex justify-between text-slate-900 font-bold pt-1 border-t border-slate-200">
+                                    <span>Tier Subtotal:</span>
+                                    <span class="mono text-[#c0151d]" id="cardLightweightSubtotal">$380/mo</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Versatile Card -->
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3 relative">
+                            <div class="flex justify-between items-center">
+                                <span class="badge badge-versatile">Versatile Tier</span>
+                                <span class="text-xs font-bold text-slate-600 mono" id="cardVersatileUserCount">20 Users</span>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-black text-slate-800 mono" id="cardVersatilePerUser">$39 <span class="text-xs font-normal text-slate-500">/ user</span></div>
+                                <div class="text-[11px] text-slate-500 font-medium mt-0.5" id="cardVersatileModelName">*Based on GPT-5.4</div>
+                            </div>
+                            <div class="space-y-1.5 pt-2 border-t border-slate-200/60 text-xs">
+                                <div class="flex justify-between text-slate-600">
+                                    <span>Business License (Base):</span>
+                                    <span class="font-semibold mono">$19/mo</span>
+                                </div>
+                                <div class="flex justify-between text-slate-600">
+                                    <span>Add. Credit Usage:</span>
+                                    <span class="font-semibold mono text-amber-600" id="cardVersatileAddCredit">$20/mo</span>
+                                </div>
+                                <div class="flex justify-between text-slate-900 font-bold pt-1 border-t border-slate-200">
+                                    <span>Tier Subtotal:</span>
+                                    <span class="mono text-[#c0151d]" id="cardVersatileSubtotal">$780/mo</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Powerful Card -->
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3 relative">
+                            <div class="flex justify-between items-center">
+                                <span class="badge badge-powerful">Powerful Tier</span>
+                                <span class="text-xs font-bold text-slate-600 mono" id="cardPowerfulUserCount">10 Users</span>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-black text-slate-800 mono" id="cardPowerfulPerUser">$78 <span class="text-xs font-normal text-slate-500">/ user</span></div>
+                                <div class="text-[11px] text-slate-500 font-medium mt-0.5" id="cardPowerfulModelName">*Based on GPT-5.5</div>
+                            </div>
+                            <div class="space-y-1.5 pt-2 border-t border-slate-200/60 text-xs">
+                                <div class="flex justify-between text-slate-600">
+                                    <span>Business License (Base):</span>
+                                    <span class="font-semibold mono">$19/mo</span>
+                                </div>
+                                <div class="flex justify-between text-slate-600">
+                                    <span>Add. Credit Usage:</span>
+                                    <span class="font-semibold mono text-rose-600" id="cardPowerfulAddCredit">$59/mo</span>
+                                </div>
+                                <div class="flex justify-between text-slate-900 font-bold pt-1 border-t border-slate-200">
+                                    <span>Tier Subtotal:</span>
+                                    <span class="mono text-[#c0151d]" id="cardPowerfulSubtotal">$780/mo</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- FULL MODEL REFERENCE TABLE (Inspired by Slide 1) -->
+                <div class="card p-5 space-y-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-800">GitHub Copilot LLM Reference Rate Card</h3>
+                            <p class="text-xs text-slate-500">Per 1M token costs & calculated single-user monthly allocations.</p>
+                        </div>
+                        <div class="text-xs text-slate-400 italic">1 AI Credit = $0.01 USD</div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold bg-slate-50">
+                                    <th class="p-2.5">Provider & Model</th>
+                                    <th class="p-2.5">Uncached Input <span class="text-[9px] font-normal block">(Per 1M)</span></th>
+                                    <th class="p-2.5">Cached Input <span class="text-[9px] font-normal block">(Per 1M)</span></th>
+                                    <th class="p-2.5">Cached Write <span class="text-[9px] font-normal block">(Per 1M)</span></th>
+                                    <th class="p-2.5">Output <span class="text-[9px] font-normal block">(Per 1M)</span></th>
+                                    <th class="p-2.5 text-right font-bold text-slate-800">Monthly Token Cost <span class="text-[9px] font-normal block text-slate-500" id="tableHeaderTokenVolume">(20M Allocation)</span></th>
+                                </tr>
+                            </thead>
+                            <tbody id="modelPricingTableBody" class="divide-y divide-slate-100 text-slate-700">
+                                <!-- Populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="text-[11px] text-slate-400 italic pt-1">
+                        * Note: Anthropic models include a separate Cache Write fee. In this calculation, 1M token out of the cached volume applies a Cache Write cost (matching official Copilot billing specifications).
+                    </div>
+                </div>
+
+                <!-- EXECUTIVE SUMMARY TEXT EXPORT TOOL -->
+                <div class="card p-5 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                            Executive Budget Summary (Copy for Management / SharePoint)
+                        </h3>
+                        <button id="btnCopySummary" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer">
+                            <span>Copy Summary</span>
+                        </button>
+                    </div>
+                    <textarea id="summaryTextOutput" readonly class="w-full h-28 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-700 outline-none resize-none"></textarea>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Official GitHub Copilot Model Rates (Per 1 Million Tokens)
+        const MODELS = {
+            'gpt-5.4-mini': { name: 'GPT-5.4 mini', provider: 'OpenAI', tier: 'lightweight', uncached: 0.75, cached: 0.075, write: 0, output: 4.50 },
+            'gemini-3.5-flash': { name: 'Gemini 3.5 Flash', provider: 'Google', tier: 'lightweight', uncached: 1.50, cached: 0.15, write: 0, output: 9.00 },
+            'gpt-5.4': { name: 'GPT-5.4', provider: 'OpenAI', tier: 'versatile', uncached: 2.50, cached: 0.25, write: 0, output: 15.00 },
+            'claude-sonnet-4.6': { name: 'Claude Sonnet 4.6', provider: 'Anthropic', tier: 'versatile', uncached: 3.00, cached: 0.30, write: 3.75, output: 15.00 },
+            'gpt-5.5': { name: 'GPT-5.5', provider: 'OpenAI', tier: 'powerful', uncached: 5.00, cached: 0.50, write: 0, output: 30.00 },
+            'claude-opus-4.7': { name: 'Claude Opus 4.7', provider: 'Anthropic', tier: 'powerful', uncached: 5.00, cached: 0.50, write: 6.25, output: 25.00 },
+            'gemini-3.1-pro': { name: 'Gemini 3.1 Pro', provider: 'Google', tier: 'powerful', uncached: 2.00, cached: 0.20, write: 0, output: 12.00 }
+        };
+
+        const BASE_LICENSE_FEE = 19.00; // $19 / user / month
+        const INCLUDED_CREDIT_ALLOWANCE = 19.00; // Includes $19 worth of credits
+
+        // DOM Element References
+        const inputDeptName = document.getElementById('inputDeptName');
+        const inputTokenVolume = document.getElementById('inputTokenVolume');
+        const tokenDisplay = document.getElementById('tokenDisplay');
+        const inputRatioPreset = document.getElementById('inputRatioPreset');
+
+        const usersLightweight = document.getElementById('usersLightweight');
+        const usersVersatile = document.getElementById('usersVersatile');
+        const usersPowerful = document.getElementById('usersPowerful');
+
+        const modelLightweight = document.getElementById('modelLightweight');
+        const modelVersatile = document.getElementById('modelVersatile');
+        const modelPowerful = document.getElementById('modelPowerful');
+
+        // Calculate single user token cost for a given model key and total token allocation
+        function calculateSingleUserTokenCost(modelKey, totalTokensM, cachedPerc, uncachedPerc, outputPerc) {
+            const m = MODELS[modelKey];
+            if (!m) return 0;
+
+            const uncachedVol = totalTokensM * (uncachedPerc / 100);
+            const outputVol = totalTokensM * (outputPerc / 100);
+            let cachedVol = totalTokensM * (cachedPerc / 100);
+
+            let cost = 0;
+            // Handle Anthropic Cache Write rule (1M token cache write per 20M tokens)
+            if (m.write > 0 && cachedVol >= 1) {
+                const writeVol = (totalTokensM / 20) * 1; // 1M write per 20M allocation
+                const readVol = Math.max(0, cachedVol - writeVol);
+                cost = (uncachedVol * m.uncached) + (readVol * m.cached) + (writeVol * m.write) + (outputVol * m.output);
+            } else {
+                cost = (uncachedVol * m.uncached) + (cachedVol * m.cached) + (outputVol * m.output);
+            }
+
+            return cost;
+        }
+
+        // Format currency helper
+        function formatUSD(num) {
+            return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // Main Calculation Engine
+        function calculateAndRender() {
+            const deptName = inputDeptName.value || 'Development Team';
+            const tokenVolumeM = parseFloat(inputTokenVolume.value) || 20;
+            tokenDisplay.textContent = tokenVolumeM + ' Million';
+
+            // Ratio percentages
+            const [cachedP, uncachedP, outputP] = inputRatioPreset.value.split('-').map(Number);
+
+            // User Counts
+            const numLightweight = parseInt(usersLightweight.value) || 0;
+            const numVersatile = parseInt(usersVersatile.value) || 0;
+            const numPowerful = parseInt(usersPowerful.value) || 0;
+            const totalUsers = numLightweight + numVersatile + numPowerful;
+
+            // Selected Models
+            const keyLightweight = modelLightweight.value;
+            const keyVersatile = modelVersatile.value;
+            const keyPowerful = modelPowerful.value;
+
+            // Per User Token Costs
+            const tokenCostLightweight = calculateSingleUserTokenCost(keyLightweight, tokenVolumeM, cachedP, uncachedP, outputP);
+            const tokenCostVersatile = calculateSingleUserTokenCost(keyVersatile, tokenVolumeM, cachedP, uncachedP, outputP);
+            const tokenCostPowerful = calculateSingleUserTokenCost(keyPowerful, tokenVolumeM, cachedP, uncachedP, outputP);
+
+            // Net User Monthly Cost (Base $19 + Additional Credits if Token Cost > $19 allowance)
+            const addCreditLightweight = Math.max(0, tokenCostLightweight - INCLUDED_CREDIT_ALLOWANCE);
+            const netUserLightweight = BASE_LICENSE_FEE + addCreditLightweight;
+
+            const addCreditVersatile = Math.max(0, tokenCostVersatile - INCLUDED_CREDIT_ALLOWANCE);
+            const netUserVersatile = BASE_LICENSE_FEE + addCreditVersatile;
+
+            const addCreditPowerful = Math.max(0, tokenCostPowerful - INCLUDED_CREDIT_ALLOWANCE);
+            const netUserPowerful = BASE_LICENSE_FEE + addCreditPowerful;
+
+            // Subtotals
+            const subtotalLightweight = numLightweight * netUserLightweight;
+            const subtotalVersatile = numVersatile * netUserVersatile;
+            const subtotalPowerful = numPowerful * netUserPowerful;
+
+            const totalMonthly = subtotalLightweight + subtotalVersatile + subtotalPowerful;
+            const totalAnnual = totalMonthly * 12;
+
+            const totalBaseSub = totalUsers * BASE_LICENSE_FEE;
+            const totalAddCredit = (numLightweight * addCreditLightweight) + (numVersatile * addCreditVersatile) + (numPowerful * addCreditPowerful);
+
+            const blendedAvgPerUser = totalUsers > 0 ? (totalMonthly / totalUsers) : 0;
+
+            // Render Executive Summary Top Cards
+            document.getElementById('summaryTotalMonthly').textContent = formatUSD(totalMonthly);
+            document.getElementById('summaryTotalAnnual').textContent = formatUSD(totalAnnual);
+            document.getElementById('summaryTotalUsers').textContent = totalUsers + ' Users';
+            document.getElementById('summaryBlendedAvg').textContent = formatUSD(blendedAvgPerUser) + ' / dev';
+            document.getElementById('summaryBaseSub').textContent = formatUSD(totalBaseSub);
+            document.getElementById('summaryAddCredit').textContent = formatUSD(totalAddCredit);
+
+            // Render Tier Breakdown Cards
+            document.getElementById('tierSummaryHeaderNote').textContent = `*Based on ${tokenVolumeM}M tokens / user (${cachedP}% Cached / ${uncachedP}% Uncached / ${outputP}% Output)`;
+
+            document.getElementById('cardLightweightUserCount').textContent = numLightweight + ' Users';
+            document.getElementById('cardLightweightPerUser').innerHTML = `${formatUSD(netUserLightweight)} <span class="text-xs font-normal text-slate-500">/ user</span>`;
+            document.getElementById('cardLightweightModelName').textContent = `*Based on ${MODELS[keyLightweight].name}`;
+            document.getElementById('cardLightweightAddCredit').textContent = formatUSD(addCreditLightweight) + '/mo';
+            document.getElementById('cardLightweightSubtotal').textContent = formatUSD(subtotalLightweight) + '/mo';
+
+            document.getElementById('cardVersatileUserCount').textContent = numVersatile + ' Users';
+            document.getElementById('cardVersatilePerUser').innerHTML = `${formatUSD(netUserVersatile)} <span class="text-xs font-normal text-slate-500">/ user</span>`;
+            document.getElementById('cardVersatileModelName').textContent = `*Based on ${MODELS[keyVersatile].name}`;
+            document.getElementById('cardVersatileAddCredit').textContent = formatUSD(addCreditVersatile) + '/mo';
+            document.getElementById('cardVersatileSubtotal').textContent = formatUSD(subtotalVersatile) + '/mo';
+
+            document.getElementById('cardPowerfulUserCount').textContent = numPowerful + ' Users';
+            document.getElementById('cardPowerfulPerUser').innerHTML = `${formatUSD(netUserPowerful)} <span class="text-xs font-normal text-slate-500">/ user</span>`;
+            document.getElementById('cardPowerfulModelName').textContent = `*Based on ${MODELS[keyPowerful].name}`;
+            document.getElementById('cardPowerfulAddCredit').textContent = formatUSD(addCreditPowerful) + '/mo';
+            document.getElementById('cardPowerfulSubtotal').textContent = formatUSD(subtotalPowerful) + '/mo';
+
+            // Render Full Model Reference Table
+            document.getElementById('tableHeaderTokenVolume').textContent = `(${tokenVolumeM}M Allocation)`;
+            const tableBody = document.getElementById('modelPricingTableBody');
+            tableBody.innerHTML = '';
+
+            Object.keys(MODELS).forEach(key => {
+                const m = MODELS[key];
+                const tokenCost = calculateSingleUserTokenCost(key, tokenVolumeM, cachedP, uncachedP, outputP);
+                const isSelected = (key === keyLightweight || key === keyVersatile || key === keyPowerful);
+
+                let badgeClass = 'badge-lightweight';
+                if (m.tier === 'versatile') badgeClass = 'badge-versatile';
+                if (m.tier === 'powerful') badgeClass = 'badge-powerful';
+
+                const tr = document.createElement('tr');
+                if (isSelected) tr.className = 'bg-slate-50/90 font-medium';
+
+                tr.innerHTML = `
+                    <td class="p-2.5">
+                        <div class="text-[10px] text-slate-400 font-semibold uppercase">${m.provider}</div>
+                        <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                            ${m.name}
+                            <span class="badge ${badgeClass}">${m.tier}</span>
+                        </div>
+                    </td>
+                    <td class="p-2.5 mono">$${m.uncached.toFixed(2)}</td>
+                    <td class="p-2.5 mono">$${m.cached.toFixed(3)}</td>
+                    <td class="p-2.5 mono">${m.write > 0 ? '$' + m.write.toFixed(2) : '-'}</td>
+                    <td class="p-2.5 mono">$${m.output.toFixed(2)}</td>
+                    <td class="p-2.5 text-right font-bold mono text-[#c0151d] text-sm">${formatUSD(tokenCost)}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            // Generate Copyable Summary Text
+            const summaryText = `GITHUB COPILOT LLM BUDGET ESTIMATE
+Department / Team: ${deptName}
+Total Active Users: ${totalUsers} Users
+Monthly Token Allocation: ${tokenVolumeM} Million Tokens / User
+
+SUMMARY BREAKDOWN:
+- Lightweight Tier (${numLightweight} Users - ${MODELS[keyLightweight].name}): ${formatUSD(netUserLightweight)} / user / month (Subtotal: ${formatUSD(subtotalLightweight)})
+- Versatile Tier (${numVersatile} Users - ${MODELS[keyVersatile].name}): ${formatUSD(netUserVersatile)} / user / month (Subtotal: ${formatUSD(subtotalVersatile)})
+- Powerful Tier (${numPowerful} Users - ${MODELS[keyPowerful].name}): ${formatUSD(netUserPowerful)} / user / month (Subtotal: ${formatUSD(subtotalPowerful)})
+
+TOTAL ESTIMATED INVESTMENT:
+- Total Monthly Cost: ${formatUSD(totalMonthly)}
+- Total Annual Cost: ${formatUSD(totalAnnual)}
+- Blended Cost per Developer: ${formatUSD(blendedAvgPerUser)} / month`;
+
+            document.getElementById('summaryTextOutput').value = summaryText;
+        }
+
+        // Attach Event Listeners
+        [inputDeptName, inputTokenVolume, inputRatioPreset, usersLightweight, usersVersatile, usersPowerful, modelLightweight, modelVersatile, modelPowerful].forEach(elem => {
+            elem.addEventListener('input', calculateAndRender);
+            elem.addEventListener('change', calculateAndRender);
+        });
+
+        // Copy Button Handler
+        document.getElementById('btnCopySummary').addEventListener('click', function() {
+            const summaryText = document.getElementById('summaryTextOutput');
+            summaryText.select();
+            document.execCommand('copy');
+            
+            const btn = this;
+            const origText = btn.innerHTML;
+            btn.innerHTML = `<span>Copied!</span>`;
+            btn.classList.replace('bg-slate-800', 'bg-emerald-600');
+            setTimeout(() => {
+                btn.innerHTML = origText;
+                btn.classList.replace('bg-emerald-600', 'bg-slate-800');
+            }, 2000);
+        });
+
+        // Initial Calculation Run
+        calculateAndRender();
+    </script>
+</body>
+</html>
