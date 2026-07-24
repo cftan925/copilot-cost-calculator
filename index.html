@@ -203,8 +203,17 @@
                                 <div>
                                     <label class="text-[11px] font-medium text-slate-500 block">Model Choice</label>
                                     <select id="modelLightweight" class="input-field w-full text-xs">
-                                        <option value="gpt-5.6-luna" selected>GPT-5.6 Luna (OpenAI)</option>
-                                        <option value="gemini-3.5-flash">Gemini 3.5 Flash (Google)</option>
+                                        <optgroup label="OpenAI">
+                                            <option value="gpt-5-mini">GPT-5 mini</option>
+                                            <option value="gpt-5.4-nano">GPT-5.4 nano</option>
+                                            <option value="gpt-5.4-mini">GPT-5.4 mini</option>
+                                            <option value="gpt-5.6-luna" selected>GPT-5.6 Luna</option>
+                                            <option value="gpt-5.6-luna-long">GPT-5.6 Luna (Long ctx)</option>
+                                        </optgroup>
+                                        <optgroup label="Google">
+                                            <option value="gemini-3-flash">Gemini 3 Flash</option>
+                                            <option value="gemini-3.5-flash">Gemini 3.5 Flash</option>
+                                        </optgroup>
                                     </select>
                                 </div>
                             </div>
@@ -224,8 +233,22 @@
                                 <div>
                                     <label class="text-[11px] font-medium text-slate-500 block">Model Choice</label>
                                     <select id="modelVersatile" class="input-field w-full text-xs">
-                                        <option value="gpt-5.6-terra" selected>GPT-5.6 Terra (OpenAI)</option>
-                                        <option value="claude-sonnet-4.6">Claude Sonnet 4.6 (Anthropic)</option>
+                                        <optgroup label="OpenAI">
+                                            <option value="gpt-5.4">GPT-5.4</option>
+                                            <option value="gpt-5.4-long">GPT-5.4 (Long ctx)</option>
+                                            <option value="gpt-5.6-terra" selected>GPT-5.6 Terra</option>
+                                            <option value="gpt-5.6-terra-long">GPT-5.6 Terra (Long ctx)</option>
+                                        </optgroup>
+                                        <optgroup label="Anthropic">
+                                            <option value="claude-haiku-4.5">Claude Haiku 4.5</option>
+                                            <option value="claude-sonnet-4">Claude Sonnet 4</option>
+                                            <option value="claude-sonnet-4.5">Claude Sonnet 4.5</option>
+                                            <option value="claude-sonnet-4.6">Claude Sonnet 4.6</option>
+                                            <option value="claude-sonnet-5">Claude Sonnet 5 ★ promo</option>
+                                        </optgroup>
+                                        <optgroup label="Google">
+                                            <option value="gemini-3.6-flash">Gemini 3.6 Flash</option>
+                                        </optgroup>
                                     </select>
                                 </div>
                             </div>
@@ -245,9 +268,26 @@
                                 <div>
                                     <label class="text-[11px] font-medium text-slate-500 block">Model Choice</label>
                                     <select id="modelPowerful" class="input-field w-full text-xs">
-                                        <option value="gpt-5.6-sol" selected>GPT-5.6 Sol (OpenAI)</option>
-                                        <option value="claude-opus-4.8">Claude Opus 4.8 (Anthropic)</option>
-                                        <option value="gemini-3.1-pro">Gemini 3.1 Pro (Google)</option>
+                                        <optgroup label="OpenAI">
+                                            <option value="gpt-5.3-codex">GPT-5.3 Codex</option>
+                                            <option value="gpt-5.5">GPT-5.5</option>
+                                            <option value="gpt-5.5-long">GPT-5.5 (Long ctx)</option>
+                                            <option value="gpt-5.6-sol" selected>GPT-5.6 Sol</option>
+                                            <option value="gpt-5.6-sol-long">GPT-5.6 Sol (Long ctx)</option>
+                                        </optgroup>
+                                        <optgroup label="Anthropic">
+                                            <option value="claude-opus-4.5">Claude Opus 4.5</option>
+                                            <option value="claude-opus-4.6">Claude Opus 4.6</option>
+                                            <option value="claude-opus-4.7">Claude Opus 4.7</option>
+                                            <option value="claude-opus-4.8">Claude Opus 4.8</option>
+                                            <option value="claude-opus-4.8-fast">Claude Opus 4.8 (fast)</option>
+                                            <option value="claude-fable-5">Claude Fable 5</option>
+                                        </optgroup>
+                                        <optgroup label="Google">
+                                            <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                                            <option value="gemini-3.1-pro">Gemini 3.1 Pro</option>
+                                            <option value="gemini-3.1-pro-long">Gemini 3.1 Pro (Long ctx)</option>
+                                        </optgroup>
                                     </select>
                                 </div>
                             </div>
@@ -434,8 +474,10 @@
                     </div>
                     
                     <div class="text-[11px] text-slate-400 italic pt-1">
-                        * Note: Anthropic models include a separate Cache Write fee. In this calculation, 1M token out of the cached volume applies a Cache Write cost (matching official Copilot billing specifications).<br>
-                        <span class="inline-flex items-center gap-1 mt-1"><span class="inline-block w-2.5 h-2.5 rounded-sm bg-slate-100 border border-slate-300"></span> Highlighted rows = active tier selection &nbsp;|&nbsp; <span class="inline-block w-2.5 h-2.5 rounded-sm bg-amber-50 border border-amber-200"></span> Manually added for comparison</span>
+                        * Anthropic models include a separate Cache Write fee. In this calculation, 1M write token per 20M allocation is applied.<br>
+                        ★ Claude Sonnet 5 is at promotional pricing through Aug 31, 2026.<br>
+                        Long ctx variants apply when context window exceeds the model's default threshold.<br>
+                        <span class="inline-flex items-center gap-1 mt-1"><span class="inline-block w-2.5 h-2.5 rounded-sm bg-slate-100 border border-slate-300"></span> Highlighted = active tier selection &nbsp;|&nbsp; <span class="inline-block w-2.5 h-2.5 rounded-sm bg-amber-50 border border-amber-200"></span> Manually added for comparison</span>
                     </div>
                 </div>
 
@@ -462,14 +504,42 @@
     <script>
         // Official GitHub Copilot Model Rates (Per 1 Million Tokens)
         // Source: https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing
+        // Verified July 24, 2026
         const MODELS = {
-            'gpt-5.6-luna': { name: 'GPT-5.6 Luna', provider: 'OpenAI', tier: 'lightweight', uncached: 1.00, cached: 0.10, write: 0, output: 6.00 },
-            'gemini-3.5-flash': { name: 'Gemini 3.5 Flash', provider: 'Google', tier: 'lightweight', uncached: 1.50, cached: 0.15, write: 0, output: 9.00 },
-            'gpt-5.6-terra': { name: 'GPT-5.6 Terra', provider: 'OpenAI', tier: 'versatile', uncached: 2.50, cached: 0.25, write: 0, output: 15.00 },
-            'claude-sonnet-4.6': { name: 'Claude Sonnet 4.6', provider: 'Anthropic', tier: 'versatile', uncached: 3.00, cached: 0.30, write: 3.75, output: 15.00 },
-            'gpt-5.6-sol': { name: 'GPT-5.6 Sol', provider: 'OpenAI', tier: 'powerful', uncached: 5.00, cached: 0.50, write: 0, output: 30.00 },
-            'claude-opus-4.8': { name: 'Claude Opus 4.8', provider: 'Anthropic', tier: 'powerful', uncached: 5.00, cached: 0.50, write: 6.25, output: 25.00 },
-            'gemini-3.1-pro': { name: 'Gemini 3.1 Pro', provider: 'Google', tier: 'powerful', uncached: 2.00, cached: 0.20, write: 0, output: 12.00 }
+            // ── OpenAI ─────────────────────────────────────────────────────────────
+            'gpt-5-mini':          { name: 'GPT-5 mini',              provider: 'OpenAI',    tier: 'lightweight', uncached: 0.25,  cached: 0.025, write: 0,     output: 2.00  },
+            'gpt-5.4-nano':        { name: 'GPT-5.4 nano',            provider: 'OpenAI',    tier: 'lightweight', uncached: 0.20,  cached: 0.020, write: 0,     output: 1.25  },
+            'gpt-5.4-mini':        { name: 'GPT-5.4 mini',            provider: 'OpenAI',    tier: 'lightweight', uncached: 0.75,  cached: 0.075, write: 0,     output: 4.50  },
+            'gpt-5.6-luna':        { name: 'GPT-5.6 Luna',            provider: 'OpenAI',    tier: 'lightweight', uncached: 1.00,  cached: 0.100, write: 0,     output: 6.00  },
+            'gpt-5.6-luna-long':   { name: 'GPT-5.6 Luna (Long ctx)', provider: 'OpenAI',    tier: 'lightweight', uncached: 2.00,  cached: 0.200, write: 0,     output: 9.00  },
+            'gpt-5.4':             { name: 'GPT-5.4',                 provider: 'OpenAI',    tier: 'versatile',   uncached: 2.50,  cached: 0.250, write: 0,     output: 15.00 },
+            'gpt-5.4-long':        { name: 'GPT-5.4 (Long ctx)',      provider: 'OpenAI',    tier: 'versatile',   uncached: 5.00,  cached: 0.500, write: 0,     output: 22.50 },
+            'gpt-5.6-terra':       { name: 'GPT-5.6 Terra',           provider: 'OpenAI',    tier: 'versatile',   uncached: 2.50,  cached: 0.250, write: 0,     output: 15.00 },
+            'gpt-5.6-terra-long':  { name: 'GPT-5.6 Terra (Long ctx)',provider: 'OpenAI',    tier: 'versatile',   uncached: 5.00,  cached: 0.500, write: 0,     output: 22.50 },
+            'gpt-5.3-codex':       { name: 'GPT-5.3 Codex',           provider: 'OpenAI',    tier: 'powerful',    uncached: 1.75,  cached: 0.175, write: 0,     output: 14.00 },
+            'gpt-5.5':             { name: 'GPT-5.5',                 provider: 'OpenAI',    tier: 'powerful',    uncached: 5.00,  cached: 0.500, write: 0,     output: 30.00 },
+            'gpt-5.5-long':        { name: 'GPT-5.5 (Long ctx)',      provider: 'OpenAI',    tier: 'powerful',    uncached: 10.00, cached: 1.000, write: 0,     output: 45.00 },
+            'gpt-5.6-sol':         { name: 'GPT-5.6 Sol',             provider: 'OpenAI',    tier: 'powerful',    uncached: 5.00,  cached: 0.500, write: 0,     output: 30.00 },
+            'gpt-5.6-sol-long':    { name: 'GPT-5.6 Sol (Long ctx)',  provider: 'OpenAI',    tier: 'powerful',    uncached: 10.00, cached: 1.000, write: 0,     output: 45.00 },
+            // ── Anthropic ──────────────────────────────────────────────────────────
+            'claude-haiku-4.5':    { name: 'Claude Haiku 4.5',        provider: 'Anthropic', tier: 'versatile',   uncached: 1.00,  cached: 0.100, write: 1.25,  output: 5.00  },
+            'claude-sonnet-4':     { name: 'Claude Sonnet 4',         provider: 'Anthropic', tier: 'versatile',   uncached: 3.00,  cached: 0.300, write: 3.75,  output: 15.00 },
+            'claude-sonnet-4.5':   { name: 'Claude Sonnet 4.5',       provider: 'Anthropic', tier: 'versatile',   uncached: 3.00,  cached: 0.300, write: 3.75,  output: 15.00 },
+            'claude-sonnet-4.6':   { name: 'Claude Sonnet 4.6',       provider: 'Anthropic', tier: 'versatile',   uncached: 3.00,  cached: 0.300, write: 3.75,  output: 15.00 },
+            'claude-sonnet-5':     { name: 'Claude Sonnet 5 ★',       provider: 'Anthropic', tier: 'versatile',   uncached: 2.00,  cached: 0.200, write: 2.50,  output: 10.00 },
+            'claude-opus-4.5':     { name: 'Claude Opus 4.5',         provider: 'Anthropic', tier: 'powerful',    uncached: 5.00,  cached: 0.500, write: 6.25,  output: 25.00 },
+            'claude-opus-4.6':     { name: 'Claude Opus 4.6',         provider: 'Anthropic', tier: 'powerful',    uncached: 5.00,  cached: 0.500, write: 6.25,  output: 25.00 },
+            'claude-opus-4.7':     { name: 'Claude Opus 4.7',         provider: 'Anthropic', tier: 'powerful',    uncached: 5.00,  cached: 0.500, write: 6.25,  output: 25.00 },
+            'claude-opus-4.8':     { name: 'Claude Opus 4.8',         provider: 'Anthropic', tier: 'powerful',    uncached: 5.00,  cached: 0.500, write: 6.25,  output: 25.00 },
+            'claude-opus-4.8-fast':{ name: 'Claude Opus 4.8 (fast)',  provider: 'Anthropic', tier: 'powerful',    uncached: 10.00, cached: 1.000, write: 12.50, output: 50.00 },
+            'claude-fable-5':      { name: 'Claude Fable 5',          provider: 'Anthropic', tier: 'powerful',    uncached: 10.00, cached: 1.000, write: 12.50, output: 50.00 },
+            // ── Google ─────────────────────────────────────────────────────────────
+            'gemini-3-flash':      { name: 'Gemini 3 Flash',          provider: 'Google',    tier: 'lightweight', uncached: 0.50,  cached: 0.050, write: 0,     output: 3.00  },
+            'gemini-3.5-flash':    { name: 'Gemini 3.5 Flash',        provider: 'Google',    tier: 'lightweight', uncached: 1.50,  cached: 0.150, write: 0,     output: 9.00  },
+            'gemini-3.6-flash':    { name: 'Gemini 3.6 Flash',        provider: 'Google',    tier: 'versatile',   uncached: 1.50,  cached: 0.150, write: 0,     output: 7.50  },
+            'gemini-2.5-pro':      { name: 'Gemini 2.5 Pro',          provider: 'Google',    tier: 'powerful',    uncached: 1.25,  cached: 0.125, write: 0,     output: 10.00 },
+            'gemini-3.1-pro':      { name: 'Gemini 3.1 Pro',          provider: 'Google',    tier: 'powerful',    uncached: 2.00,  cached: 0.200, write: 0,     output: 12.00 },
+            'gemini-3.1-pro-long': { name: 'Gemini 3.1 Pro (Long ctx)',provider: 'Google',   tier: 'powerful',    uncached: 4.00,  cached: 0.400, write: 0,     output: 18.00 },
         };
 
         const BASE_LICENSE_FEE = 19.00; // $19 / user / month
