@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Copilot LLM Enterprise Cost Estimator</title>
+    <title>GitHub Copilot Cost Estimator</title>
     <!-- Tailwind CSS for utility styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -120,11 +120,11 @@
         <div class="card p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-l-4 border-l-[#c0151d]">
             <div>
                 <div class="flex items-center gap-2 mb-1">
-                    <span class="text-xs font-bold uppercase tracking-wider text-[#c0151d]">Group Technology & Operations</span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-[#c0151d]">Group Technology</span>
                     <span class="text-xs text-slate-400">•</span>
                     <span class="text-xs text-slate-500 font-medium">Enterprise Budgeting Tool</span>
                 </div>
-                <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">GitHub Copilot LLM Cost Estimator</h1>
+                <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">GitHub Copilot Cost Estimator</h1>
                 <p class="text-sm text-slate-500 mt-1">Simulate departmental Copilot costs based on user tiers, base subscriptions, and usage tokens.</p>
             </div>
             <div class="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
@@ -291,12 +291,16 @@
                     <!-- Card 3: Base License vs Overage Breakdown -->
                     <div class="card p-5 bg-white border-slate-200">
                         <div class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Base vs Additional Credit</div>
-                        <div class="flex items-baseline gap-1">
-                            <span class="text-xl font-bold text-slate-700 mono" id="summaryBaseSub">$950</span>
-                            <span class="text-xs text-slate-400 font-medium">Base</span>
-                            <span class="text-slate-300 font-light mx-1">+</span>
-                            <span class="text-xl font-bold text-[#c0151d] mono" id="summaryAddCredit">$990</span>
-                            <span class="text-xs text-slate-400 font-medium">Credit</span>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <div class="flex items-baseline gap-1 min-w-0">
+                                <span class="text-lg font-bold text-slate-700 mono truncate" id="summaryBaseSub">$950</span>
+                                <span class="text-xs text-slate-400 font-medium shrink-0">Base</span>
+                            </div>
+                            <span class="text-slate-300 font-light shrink-0">+</span>
+                            <div class="flex items-baseline gap-1 min-w-0">
+                                <span class="text-lg font-bold text-[#c0151d] mono truncate" id="summaryAddCredit">$990</span>
+                                <span class="text-xs text-slate-400 font-medium shrink-0">Credit</span>
+                            </div>
                         </div>
                         <div class="text-[11px] text-slate-400 mt-2">
                             Base = $19/user (includes 1,900 credits).
