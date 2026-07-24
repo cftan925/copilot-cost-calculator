@@ -405,9 +405,14 @@
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
                         <div>
                             <h3 class="text-sm font-bold text-slate-800">GitHub Copilot LLM Reference Rate Card</h3>
-                            <p class="text-xs text-slate-500">Per 1M token costs & calculated single-user monthly allocations.</p>
+                            <p class="text-xs text-slate-500">Showing models selected in User Distribution. Add more for comparison.</p>
                         </div>
-                        <div class="text-xs text-slate-400 italic">1 AI Credit = $0.01 USD</div>
+                        <div class="flex items-center gap-2">
+                            <select id="addModelSelect" class="input-field text-xs py-1.5 pr-6 max-w-[200px]" title="Pick a model to add">
+                                <option value="">+ Add model…</option>
+                            </select>
+                            <button id="btnAddModel" class="shrink-0 bg-slate-700 hover:bg-slate-900 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors cursor-pointer">Add</button>
+                        </div>
                     </div>
 
                     <div class="overflow-x-auto">
@@ -429,7 +434,8 @@
                     </div>
                     
                     <div class="text-[11px] text-slate-400 italic pt-1">
-                        * Note: Anthropic models include a separate Cache Write fee. In this calculation, 1M token out of the cached volume applies a Cache Write cost (matching official Copilot billing specifications).
+                        * Note: Anthropic models include a separate Cache Write fee. In this calculation, 1M token out of the cached volume applies a Cache Write cost (matching official Copilot billing specifications).<br>
+                        <span class="inline-flex items-center gap-1 mt-1"><span class="inline-block w-2.5 h-2.5 rounded-sm bg-slate-100 border border-slate-300"></span> Highlighted rows = active tier selection &nbsp;|&nbsp; <span class="inline-block w-2.5 h-2.5 rounded-sm bg-amber-50 border border-amber-200"></span> Manually added for comparison</span>
                     </div>
                 </div>
 
@@ -468,6 +474,9 @@
 
         const BASE_LICENSE_FEE = 19.00; // $19 / user / month
         const INCLUDED_CREDIT_ALLOWANCE = 19.00; // Includes $19 worth of credits
+
+        // Extra models manually added to the rate card table
+        const extraModelsInTable = new Set();
 
         // DOM Element References
         const inputDeptName = document.getElementById('inputDeptName');
@@ -587,15 +596,37 @@
             document.getElementById('cardPowerfulAddCredit').textContent = formatUSD(addCreditPowerful) + '/mo';
             document.getElementById('cardPowerfulSubtotal').textContent = formatUSD(subtotalPowerful) + '/mo';
 
-            // Render Full Model Reference Table
+            // Render Full Model Reference Table — only selected + manually added models
             document.getElementById('tableHeaderTokenVolume').textContent = `(${tokenVolumeM}M Allocation)`;
             const tableBody = document.getElementById('modelPricingTableBody');
             tableBody.innerHTML = '';
 
+            const selectedKeys = new Set([keyLightweight, keyVersatile, keyPowerful]);
+
+            // Rebuild the "Add model" dropdown with unshown models only
+            const addModelSelect = document.getElementById('addModelSelect');
+            const prevAddVal = addModelSelect.value;
+            addModelSelect.innerHTML = '<option value="">+ Add model…</option>';
             Object.keys(MODELS).forEach(key => {
+                if (!selectedKeys.has(key) && !extraModelsInTable.has(key)) {
+                    const opt = document.createElement('option');
+                    opt.value = key;
+                    opt.textContent = `${MODELS[key].name} (${MODELS[key].provider})`;
+                    addModelSelect.appendChild(opt);
+                }
+            });
+            if (prevAddVal && addModelSelect.querySelector(`option[value="${prevAddVal}"]`)) {
+                addModelSelect.value = prevAddVal;
+            }
+
+            const keysToShow = [...selectedKeys, ...Array.from(extraModelsInTable).filter(k => !selectedKeys.has(k))];
+
+            keysToShow.forEach(key => {
                 const m = MODELS[key];
+                if (!m) return;
                 const tokenCost = calculateSingleUserTokenCost(key, tokenVolumeM, cachedP, uncachedP, outputP);
-                const isSelected = (key === keyLightweight || key === keyVersatile || key === keyPowerful);
+                const isSelected = selectedKeys.has(key);
+                const isExtra = extraModelsInTable.has(key) && !isSelected;
 
                 let badgeClass = 'badge-lightweight';
                 if (m.tier === 'versatile') badgeClass = 'badge-versatile';
@@ -603,6 +634,11 @@
 
                 const tr = document.createElement('tr');
                 if (isSelected) tr.className = 'bg-slate-50/90 font-medium';
+                else if (isExtra) tr.className = 'bg-amber-50/60';
+
+                const removeBtn = isExtra
+                    ? `<button onclick="removeExtraModel('${key}')" title="Remove from comparison" class="ml-1 text-slate-400 hover:text-rose-500 transition-colors font-bold text-xs leading-none cursor-pointer">✕</button>`
+                    : `<span class="ml-1 inline-block w-3"></span>`;
 
                 tr.innerHTML = `
                     <td class="p-2.5">
@@ -610,6 +646,8 @@
                         <div class="font-bold text-slate-900 flex items-center gap-1.5">
                             ${m.name}
                             <span class="badge ${badgeClass}">${m.tier}</span>
+                            ${isSelected ? '<span class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">active</span>' : ''}
+                            ${removeBtn}
                         </div>
                     </td>
                     <td class="p-2.5 mono">$${m.uncached.toFixed(2)}</td>
@@ -639,6 +677,27 @@ TOTAL ESTIMATED INVESTMENT:
 
             document.getElementById('summaryTextOutput').value = summaryText;
         }
+
+        // Add / remove extra model handlers
+        function removeExtraModel(key) {
+            extraModelsInTable.delete(key);
+            calculateAndRender();
+        }
+
+        document.getElementById('btnAddModel').addEventListener('click', function() {
+            const sel = document.getElementById('addModelSelect');
+            const key = sel.value;
+            if (key && MODELS[key]) {
+                extraModelsInTable.add(key);
+                sel.value = '';
+                calculateAndRender();
+            }
+        });
+
+        // Also allow pressing Enter in the select to add
+        document.getElementById('addModelSelect').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') document.getElementById('btnAddModel').click();
+        });
 
         // Attach Event Listeners
         [inputDeptName, inputTokenVolume, inputRatioPreset, usersLightweight, usersVersatile, usersPowerful, modelLightweight, modelVersatile, modelPowerful].forEach(elem => {
